@@ -1,0 +1,51 @@
+services:
+  transit-seat-availability-pipeline:
+    build: .
+    image: arm-airflow:1.0
+    container_name: transit-seat-availability-pipeline-airflow
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      AIRFLOW_CONFIG: /opt/airflow/config/airflow.cfg
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:5432/airflow_db
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__LOGGING__REMOTE_LOGGING: "false"
+      AIRFLOW__WEBSERVER__BASE_URL: "http://localhost:8080"
+      AIRFLOW__WEBSERVER__EXPOSE_HOSTNAME: "localhost"
+      AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_PASSWORDS_FILE: "/opt/airflow/config/simple_auth_manager_passwords.json"
+      PYTHONPATH: /opt/airflow
+      # Database connection for transit-seat-availability data
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: airflow
+      DB_PASSWORD: airflow
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./src:/opt/airflow/src
+      - ./data:/opt/airflow/data
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/config:/opt/airflow/config
+    ports:
+      - "8080:8080"
+    command: airflow standalone
+
+  postgres:
+    image: postgres:16
+    container_name: arm-airflow-postgres
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - arm-airflow-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U airflow"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  arm-airflow-postgres-data:
