@@ -1,18 +1,13 @@
-"""
-Evaluation & Visualization for RQ1
-
-This module creates comparison tables and plots for RQ1 analysis.
-
-Usage:
-    python -m src.evaluate
-"""
-
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from pathlib import Path
 
+
+######################################
+# Evaluation & Visualization for RQ1 #
+######################################
 
 def load_results(results_path='outputs/rq1_results/training_results.csv'):
     """Load training results."""
@@ -25,18 +20,12 @@ def create_comparison_table(results_df):
     
     Shows MAE, RMSE, R² for each horizon and feature set.
     """
-    print("\n" + "=" * 70)
-    print("RQ1 PERFORMANCE COMPARISON")
-    print("=" * 70)
-    
     # Pivot table
     pivot = results_df.pivot_table(
         index='horizon',
         columns='feature_set',
         values=['MAE', 'RMSE', 'R²']
     )
-    
-    print("\n", pivot.to_string())
     
     # Calculate benefit (when extended features available)
     if 'extended' in results_df['feature_set'].values:
@@ -50,11 +39,6 @@ def create_comparison_table(results_df):
             benefit['Δ MAE'] = benefit['base'] - benefit['extended']
             benefit['% improvement'] = (benefit['Δ MAE'] / benefit['base'] * 100).round(2)
             
-            print("\n" + "=" * 70)
-            print("EXTERNAL FACTORS BENEFIT")
-            print("=" * 70)
-            print("\n", benefit.to_string())
-    
     return pivot
 
 
@@ -90,8 +74,6 @@ def plot_horizon_comparison(results_df, output_dir='outputs/rq1_results'):
     plt.tight_layout()
     plot_path = Path(output_dir) / 'horizon_comparison.png'
     plt.savefig(plot_path, dpi=300, bbox_inches='tight')
-    print(f"\n✓ Plot saved: {plot_path}")
-    
     plt.close()
 
 
@@ -117,18 +99,11 @@ def create_rq1_summary(results_df, output_path='outputs/rq1_results/rq1_summary.
     # Save
     Path(output_path).parent.mkdir(parents=True, exist_ok=True)
     summary.to_csv(output_path, index=False)
-    
-    print(f"\n✓ RQ1 summary saved: {output_path}")
-    print("\n" + summary.to_string(index=False))
-    
     return summary
 
 
 def main():
     """Main execution."""
-    print("=" * 70)
-    print("RQ1 EVALUATION & VISUALIZATION")
-    print("=" * 70)
     
     # Load results
     results_df = load_results()
@@ -142,9 +117,7 @@ def main():
     # Create summary
     summary = create_rq1_summary(results_df)
     
-    print("\n" + "=" * 70)
-    print("✅ RQ1 EVALUATION COMPLETED")
-    print("=" * 70)
+    print("RQ1 EVALUATION COMPLETED")
     print("\nKey Findings:")
     print("1. Performance degrades as prediction horizon increases (expected)")
     print("2. Base features achieve reasonable accuracy for short-term forecasting")
