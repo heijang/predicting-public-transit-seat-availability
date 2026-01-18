@@ -1,0 +1,31 @@
+# Virtual Environment
+.venv/
+**/.venv/
+
+# IDE / Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment Variables
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+logs/
+
+# Dart
+.dart_tool/
+
+# Build outputs
+build/
+dist/
+out/
