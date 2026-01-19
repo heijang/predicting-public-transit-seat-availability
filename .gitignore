@@ -36,5 +36,8 @@ out/
 # Airflow
 airflow/config/airflow.cfg
 
-# Raw Data for Analysis
+# Data for Analysis
 data/raw
+
+# Output
+outputs/

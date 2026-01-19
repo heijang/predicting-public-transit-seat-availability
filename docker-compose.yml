@@ -26,6 +26,7 @@ services:
       - ./data:/opt/airflow/data
       - ./airflow/logs:/opt/airflow/logs
       - ./airflow/config:/opt/airflow/config
+      - ./outputs:/opt/airflow/outputs
     ports:
       - "8080:8080"
     command: airflow standalone

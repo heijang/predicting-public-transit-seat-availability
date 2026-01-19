@@ -1,5 +1,8 @@
-def load_raw(re5_path='data/raw/RE5_2024_03.csv',
-             re6_path='data/raw/RE6_2024_03.csv'):
+import pandas as pd
+import os
+
+def load_raw(re5_path='data/ingested/RE5_2024_03.csv',
+             re6_path='data/ingested/RE6_2024_03.csv'):
     re5 = pd.read_csv(re5_path)
     re6 = pd.read_csv(re6_path)
     return re5, re6
@@ -82,6 +85,7 @@ def identify_match_days(df):
 
     return df
 
+
 def clean_re5_re6(re5_raw, re6_raw):
     re5_clean = re5_raw.copy()
     re5_clean = standardize_columns(re5_clean)
@@ -120,3 +124,5 @@ def main():
     save_processed(re5_clean, re6_clean)
 
 
+if __name__ == "__main__":
+    main()
