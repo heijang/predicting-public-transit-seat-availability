@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import holidays
 from pathlib import Path
 
 """
@@ -21,6 +22,23 @@ def load_processed_data(re5_path='data/processed/re5_processed.csv',
     re6 = pd.read_csv(re6_path, parse_dates=['trip_start_date', 'trip_dep_time', 'trip_arr_time'])
     
     return re5, re6
+
+
+def add_holiday_flag(df, country='DE', prov='BB'):
+    """
+    Add is_holiday column using python-holidays.
+    
+    Germany (DE), Brandenburg (BB) for Potsdam/Berlin region.
+    """
+    if not np.issubdtype(df['trip_start_date'].dtype, np.datetime64):
+        df['trip_start_date'] = pd.to_datetime(df['trip_start_date'])
+
+    years = sorted(df['trip_start_date'].dt.year.unique())
+    de_holidays = holidays.country_holidays(country, subdiv=prov, years=years)
+
+    df['is_holiday'] = df['trip_start_date'].dt.date.apply(lambda d: d in de_holidays)
+
+    return df
 
 
 def create_horizon_targets(df, horizons={'30min': 1, '1h': 2, '3h': 6, 'next_day': 48}):
@@ -77,10 +95,15 @@ def select_features(df, feature_set='base'):
         'is_match_day',
         'occ_pct',  # current occupancy at this stop
     ]
+
+    # external factors
+    external_flags = [
+        'is_match_day',
+        'is_holiday',
+    ]
     
     if feature_set == 'extended':
-        # TODO: Add external factors later
-        return base_features
+        return base_features + external_flags
     
     return base_features
 
@@ -116,10 +139,12 @@ def save_engineered_data(df, output_path='data/processed/re5_with_targets.csv'):
 
 def main():
     """Main execution."""
-    
     # Load
     re5, re6 = load_processed_data()
     
+    # Add Holiday flag
+    re5 = add_holiday_flag(re5)
+
     # Create targets
     re5_targets = create_horizon_targets(re5)
     
