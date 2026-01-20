@@ -1,8 +1,38 @@
+import time
+from typing import Any
+
 from fastapi import FastAPI
 
 from src.models import CongestionLevel, TrainInfo, TransitRequest, TransitResponse
 
 app = FastAPI(title="Transit Information API", version="0.1.0")
+
+
+class TTLCache:
+    """Simple in-memory cache with TTL support."""
+
+    def __init__(self, ttl_seconds: int = 60):
+        self._cache: dict[str, tuple[float, Any]] = {}
+        self._ttl = ttl_seconds
+
+    def _make_key(self, request: TransitRequest) -> str:
+        return f"{request.departure_station}:{request.arrival_station}:{request.departure_time}"
+
+    def get(self, request: TransitRequest) -> TransitResponse | None:
+        key = self._make_key(request)
+        if key in self._cache:
+            timestamp, value = self._cache[key]
+            if time.time() - timestamp < self._ttl:
+                return value
+            del self._cache[key]
+        return None
+
+    def set(self, request: TransitRequest, response: TransitResponse) -> None:
+        key = self._make_key(request)
+        self._cache[key] = (time.time(), response)
+
+
+transit_cache = TTLCache(ttl_seconds=60)
 
 
 def get_dummy_trains() -> list[TrainInfo]:
@@ -46,7 +76,11 @@ async def health_check():
 
 @app.post("/transit", response_model=TransitResponse)
 async def get_transit_info(request: TransitRequest) -> TransitResponse:
-    """Get transit information with dummy data."""
+    """Get transit information with dummy data. Responses are cached for 1 minute."""
+    cached = transit_cache.get(request)
+    if cached is not None:
+        return cached
+
     total_minutes = 45
     stops = 5
 
@@ -60,7 +94,7 @@ async def get_transit_info(request: TransitRequest) -> TransitResponse:
     else:
         recommendation = "Normal congestion levels. Have a good trip!"
 
-    return TransitResponse(
+    response = TransitResponse(
         total_minutes=total_minutes,
         stops=stops,
         summary=f"~{total_minutes}min ({stops} stops)",
@@ -68,3 +102,6 @@ async def get_transit_info(request: TransitRequest) -> TransitResponse:
         todays_occupancy=get_dummy_occupancy(),
         recommendation=recommendation,
     )
+
+    transit_cache.set(request, response)
+    return response
