@@ -8,16 +8,18 @@ class StationData {
   static const String lineName = 'RE5';
   static const Color lineColor = Color(0xFFE30613); // DB Red
 
-  // Berlin RE5 major stations
+  // RE5 Train Route stations
   static const List<Map<String, dynamic>> _stationList = [
-    {'stopId': 'RE5-01', 'name': 'Stralsund'},
-    {'stopId': 'RE5-02', 'name': 'Neubrandenburg'},
-    {'stopId': 'RE5-03', 'name': 'Neustrelitz'},
-    {'stopId': 'RE5-04', 'name': 'Oranienburg'},
-    {'stopId': 'RE5-05', 'name': 'Berlin Hbf'},
-    {'stopId': 'RE5-06', 'name': 'Berlin Süd'},
-    {'stopId': 'RE5-07', 'name': 'Wünsdorf'},
-    {'stopId': 'RE5-08', 'name': 'Elsterwerda'},
+    {'stopId': '900550001', 'name': 'Neustrelitz'},
+    {'stopId': '900550232', 'name': 'Fürstenberg'},
+    {'stopId': '900550231', 'name': 'Dannenwalde'},
+    {'stopId': '900550230', 'name': 'Gransee'},
+    {'stopId': '900550229', 'name': 'Löwenberg'},
+    {'stopId': '900550228', 'name': 'Oranienburg'},
+    {'stopId': '900550227', 'name': 'Gesundbr.'},
+    {'stopId': '900550226', 'name': 'Berlin Hbf'},
+    {'stopId': '900550225', 'name': 'Potsdamer Pl.'},
+    {'stopId': '900550224', 'name': 'Südkreuz'},
   ];
 
   static List<Station> getStations() {
@@ -47,11 +49,10 @@ class StationData {
 
     if (fromIndex == -1 || toIndex == -1) return [];
 
-    if (fromIndex <= toIndex) {
-      return stations.sublist(fromIndex, toIndex + 1);
-    } else {
-      return stations.sublist(toIndex, fromIndex + 1).reversed.toList();
-    }
+    // Only forward direction supported
+    final startIdx = fromIndex < toIndex ? fromIndex : toIndex;
+    final endIdx = fromIndex < toIndex ? toIndex : fromIndex;
+    return stations.sublist(startIdx, endIdx + 1);
   }
 
   static int getEstimatedTravelTime(String fromStopId, String toStopId) {
@@ -61,7 +62,7 @@ class StationData {
 
   static List<TrainArrival> _generateMockArrivals() {
     final random = Random();
-    final destinations = ['Stralsund', 'Wünsdorf', 'Elsterwerda', 'Rostock'];
+    final destinations = ['Neustrelitz', 'Südkreuz', 'Berlin Hbf', 'Oranienburg'];
     final destination = destinations[random.nextInt(destinations.length)];
 
     return [

@@ -40,6 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
       } else if (_arrivalStation == null) {
         if (station.stopId != _departureStation!.stopId) {
           _arrivalStation = station;
+          _ensureForwardDirection();
           _updateRoute();
         }
       } else {
@@ -51,8 +52,20 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  // Ensure stations are in forward direction (lower index -> higher index)
+  void _ensureForwardDirection() {
+    if (_departureStation != null && _arrivalStation != null) {
+      if (_departureStation!.orderIndex > _arrivalStation!.orderIndex) {
+        final temp = _departureStation;
+        _departureStation = _arrivalStation;
+        _arrivalStation = temp;
+      }
+    }
+  }
+
   void _updateRoute() {
     if (_departureStation != null && _arrivalStation != null) {
+      _ensureForwardDirection();
       _route = StationData.getRouteBetween(
         _departureStation!.stopId,
         _arrivalStation!.stopId,
@@ -67,15 +80,6 @@ class _HomeScreenState extends State<HomeScreen> {
         _updateRoute();
       });
     }
-  }
-
-  void _swapStations() {
-    setState(() {
-      final temp = _departureStation;
-      _departureStation = _arrivalStation;
-      _arrivalStation = temp;
-      _updateRoute();
-    });
   }
 
   @override
@@ -171,15 +175,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: IconButton(
-                        onPressed: _swapStations,
-                        icon: const Icon(Icons.swap_horiz, size: 18),
+                      child: Icon(
+                        Icons.arrow_forward,
+                        size: 18,
                         color: StationData.lineColor,
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(
-                          minWidth: 32,
-                          minHeight: 32,
-                        ),
                       ),
                     ),
                     Expanded(
@@ -239,9 +238,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: IconButton(
-                    onPressed: _swapStations,
-                    icon: const Icon(Icons.swap_horiz),
+                  child: Icon(
+                    Icons.arrow_forward,
                     color: StationData.lineColor,
                   ),
                 ),

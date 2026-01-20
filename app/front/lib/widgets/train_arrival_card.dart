@@ -50,26 +50,17 @@ class TrainArrivalCard extends StatelessWidget {
           ),
           const SizedBox(width: 10),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
               children: [
-                Row(
-                  children: [
-                    Text(
-                      arrival.arrivalText,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    CongestionBadge(congestion: arrival.congestion),
-                  ],
-                ),
                 Text(
-                  '→ ${arrival.destination} (${arrival.trainNumber})',
-                  style: TextStyle(fontSize: 10, color: Colors.grey[600]),
+                  arrival.arrivalText,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
+                const SizedBox(width: 6),
+                CongestionBadge(congestion: arrival.congestion),
               ],
             ),
           ),
