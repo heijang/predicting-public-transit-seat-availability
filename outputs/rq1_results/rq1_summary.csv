@@ -1,5 +1,9 @@
 horizon,feature_set,MAE,RMSE,R²,samples,Performance
-30min,base,42.597,341.607,0.094,36933,Weak
-1h,base,41.893,314.709,0.117,36922,Weak
-3h,base,45.293,344.32,0.036,36881,Weak
-next_day,base,51.403,448.286,-0.002,36479,Weak
+30min,base,38.482,319.139,0.664,12830,Moderate
+30min,extended,36.818,310.118,0.683,12830,Moderate
+1h,base,55.201,444.966,0.133,12821,Weak
+1h,extended,53.814,427.467,0.2,12821,Weak
+3h,base,72.733,603.38,0.032,12784,Weak
+3h,extended,72.735,603.374,0.032,12784,Weak
+next_day,base,75.732,575.876,-0.022,12425,Weak
+next_day,extended,75.754,575.887,-0.022,12425,Weak

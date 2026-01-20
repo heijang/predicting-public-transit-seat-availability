@@ -118,11 +118,6 @@ def main():
     summary = create_rq1_summary(results_df)
     
     print("RQ1 EVALUATION COMPLETED")
-    print("\nKey Findings:")
-    print("1. Performance degrades as prediction horizon increases (expected)")
-    print("2. Base features achieve reasonable accuracy for short-term forecasting")
-    print("3. Next step: Add external factors (weather, events) to improve performance")
-
 
 if __name__ == '__main__':
     main()
