@@ -7,6 +7,7 @@ services:
       postgres:
         condition: service_healthy
     environment:
+      TZ: Europe/Berlin
       AIRFLOW_CONFIG: /opt/airflow/config/airflow.cfg
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:5432/airflow_db
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
@@ -35,6 +36,7 @@ services:
     image: postgres:16
     container_name: arm-airflow-postgres
     environment:
+      TZ: Europe/Berlin
       POSTGRES_USER: airflow
       POSTGRES_PASSWORD: airflow
       POSTGRES_DB: airflow_db

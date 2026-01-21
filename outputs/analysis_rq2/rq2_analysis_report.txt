@@ -1,0 +1,174 @@
+================================================================================
+RQ2 ANALYSIS REPORT: SHAP-based Explainability
+================================================================================
+
+Research Question:
+How do external factors shape SHAP-based explanations of seat availability
+predictions in special scenarios such as match days, holidays, and rush hours?
+
+--------------------------------------------------------------------------------
+
+1. MODEL PERFORMANCE
+----------------------------------------
+   MAE:  10.31%
+   RMSE: 16.37%
+   R2:   0.349
+
+2. OVERALL FEATURE IMPORTANCE (SHAP)
+----------------------------------------
+   Rank   Feature                    Mean |SHAP|
+   ---------------------------------------------
+   1      hist_avg_stop_hour_dow          4.6834
+   2      month                           3.9015
+   3      hist_avg_stop_dow               3.8746
+   4      hist_avg_stop_hour              0.4911
+   5      dow                             0.3189
+   6      is_match_day                    0.2453
+   7      is_holiday                      0.1801
+   8      is_weekend                      0.0800
+   9      hour                            0.0000
+   10     is_rush_hour                    0.0000
+   11     is_night                        0.0000
+
+3. KEY FINDINGS BY SCENARIO
+----------------------------------------
+
+   [Match Day (Football games at Olympiastadion)]
+   Samples: 22
+   Top 3 features:
+     1. is_match_day: 6.4528
+     2. hist_avg_stop_hour_dow: 6.3247
+     3. month: 5.3646
+
+   [Non-Match Day (Normal days)]
+   Samples: 1978
+   Top 3 features:
+     1. hist_avg_stop_hour_dow: 4.6651
+     2. month: 3.8852
+     3. hist_avg_stop_dow: 3.8630
+
+   [Holiday (German public holidays)]
+   Samples: 68
+   Top 3 features:
+     1. hist_avg_stop_hour_dow: 5.2514
+     2. hist_avg_stop_dow: 4.3492
+     3. month: 2.4618
+
+   [Non-Holiday (Working days)]
+   Samples: 1932
+   Top 3 features:
+     1. hist_avg_stop_hour_dow: 4.6634
+     2. month: 3.9521
+     3. hist_avg_stop_dow: 3.8579
+
+   [Non-Rush Hour]
+   Samples: 2000
+   Top 3 features:
+     1. hist_avg_stop_hour_dow: 4.6834
+     2. month: 3.9015
+     3. hist_avg_stop_dow: 3.8746
+
+   [Weekend (Saturday, Sunday)]
+   Samples: 506
+   Top 3 features:
+     1. hist_avg_stop_hour_dow: 4.9050
+     2. hist_avg_stop_dow: 4.0848
+     3. month: 3.5717
+
+   [Weekday (Monday-Friday)]
+   Samples: 1494
+   Top 3 features:
+     1. hist_avg_stop_hour_dow: 4.6083
+     2. month: 4.0132
+     3. hist_avg_stop_dow: 3.8034
+
+4. EXTERNAL FACTORS ANALYSIS
+----------------------------------------
+
+   External Factor Impact (Overall):
+   Factor                Mean |SHAP|   Rank
+   ----------------------------------------
+   is_match_day               0.2453      6
+   is_holiday                 0.1801      7
+   is_weekend                 0.0800      8
+   is_rush_hour               0.0000     10
+   is_night                   0.0000     11
+
+5. SCENARIO COMPARISON - KEY DIFFERENCES
+----------------------------------------
+
+   [Match Day vs Non-Match Day]
+   Biggest differences (Match - Non-Match):
+     is_match_day: +6.2765
+     hist_avg_stop_hour_dow: +1.6596
+     month: +1.4794
+     hist_avg_stop_dow: +1.0557
+     dow: +0.4711
+
+   [Holiday vs Non-Holiday]
+   Biggest differences (Holiday - Non-Holiday):
+     is_holiday: +2.2918
+     month: -1.4903
+     hist_avg_stop_hour_dow: +0.5881
+     hist_avg_stop_dow: +0.4913
+     hist_avg_stop_hour: +0.4501
+
+6. INTERPRETATION AND IMPLICATIONS
+----------------------------------------
+
+   Most Important Feature: hist_avg_stop_hour_dow (SHAP: 4.6834)
+
+   Key Insights:
+
+   1. Historical patterns contribute 65.7% of total feature importance.
+      -> Past behavior is the strongest predictor of future occupancy.
+
+   2. External factors contribute 3.7% of total feature importance.
+      -> They provide contextual adjustments rather than primary predictions.
+
+   3. 'is_match_day' importance:
+      - Overall rank: #6
+      - On match days: #1
+      -> Match day feature becomes MORE important during match days (context activation)
+
+   4. 'is_holiday' importance:
+      - Overall SHAP: 0.1801
+      - On holidays: 2.3940
+      -> Holiday feature is 1229.5% more important on actual holidays
+
+7. DECISION SUPPORT IMPLICATIONS
+----------------------------------------
+
+   For Passengers:
+   - Historical patterns (same stop, same day, same time) are the best guide
+   - On match days, expect higher occupancy, especially in affected time windows
+   - On holidays, typical patterns may not apply - check real-time predictions
+   - During rush hours, time of day is the dominant factor
+
+   For Operators:
+   - Base predictions on historical averages by station/hour/day-of-week
+   - Apply match day adjustments for event-related capacity planning
+   - Holiday schedules may need special consideration
+   - Rush hour predictions are time-driven - focus on hour-specific patterns
+
+8. CONCLUSION
+----------------------------------------
+
+   RQ2 Analysis demonstrates that:
+
+   1. SHAP provides interpretable explanations for occupancy predictions
+
+   2. Historical patterns dominate predictions across all scenarios
+
+   3. External factors (match days, holidays) activate in relevant contexts:
+      - Match day importance increases during actual match days
+      - Holiday importance increases during holidays
+      - Rush hour effects are captured through hour feature
+
+   4. Model explanations can support both:
+      - Passenger trip planning (understand why certain times are busy)
+      - Operational decisions (plan resources based on explainable predictions)
+
+================================================================================
+END OF RQ2 ANALYSIS REPORT
+================================================================================

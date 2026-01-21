@@ -9,7 +9,9 @@ class CongestionLevel(str, Enum):
 
 
 class TrainInfo(BaseModel):
+    train_line: str = Field(..., description="Train line name (e.g., RE5)")
     arrival_minutes: int = Field(..., description="Minutes until arrival")
+    platform: int = Field(..., description="Platform number")
     congestion_value: float = Field(..., ge=0.0, le=1.0, description="Congestion value from 0.0 to 1.0")
     congestion_code: int = Field(..., ge=1, le=10, description="Congestion code from 1 to 10")
     congestion_level: CongestionLevel = Field(..., description="Congestion text: High, Normal, or Low")

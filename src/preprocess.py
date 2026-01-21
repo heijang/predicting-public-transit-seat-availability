@@ -14,29 +14,10 @@ def standardize_columns(df):
 
 
 def convert_datetime(df):
-    """Convert datetime columns from HHMM format to proper datetime."""
-    df['trip_start_date'] = pd.to_datetime(df['trip_start_date'], format='%Y-%m-%d', errors='coerce')
-
-    # Convert HHMM format (e.g., "0431") to time
-    df['trip_dep_time'] = df['trip_dep_time'].astype(str).str.zfill(4)
-    df['trip_arr_time'] = df['trip_arr_time'].astype(str).str.zfill(4)
-
-    # Combine date + time columns
-    df['trip_dep_time'] = pd.to_datetime(
-        df['trip_start_date'].astype(str) + ' ' +
-        df['trip_dep_time'].str[:2] + ':' +
-        df['trip_dep_time'].str[2:4],
-        format='%Y-%m-%d %H:%M',
-        errors='coerce'
-    )
-
-    df['trip_arr_time'] = pd.to_datetime(
-        df['trip_start_date'].astype(str) + ' ' +
-        df['trip_arr_time'].str[:2] + ':' +
-        df['trip_arr_time'].str[2:4],
-        format='%Y-%m-%d %H:%M',
-        errors='coerce'
-    )
+    """Convert datetime columns to proper datetime format."""
+    df['trip_start_date'] = pd.to_datetime(df['trip_start_date'], errors='coerce')
+    df['trip_dep_time'] = pd.to_datetime(df['trip_dep_time'], errors='coerce')
+    df['trip_arr_time'] = pd.to_datetime(df['trip_arr_time'], errors='coerce')
 
     return df
 

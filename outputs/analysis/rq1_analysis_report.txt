@@ -1,0 +1,150 @@
+================================================================================
+RQ1: External Factors & Prediction Horizons - Analysis Report
+================================================================================
+
+Research Question:
+  How do external factors (e.g., weather, events, holidays) improve seat
+  availability prediction accuracy across different prediction horizons
+  (30 minutes, 1 hour, 3 hours, next day), and what does this imply for
+  short-term operations versus passenger trip planning?
+
+================================================================================
+
+1. Data Filtering Conditions
+--------------------------------------------------------------------------------
+
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │  Condition                      │  Reason                              │
+  ├─────────────────────────────────────────────────────────────────────────┤
+  │  Period: Aug 2022 onwards       │  Earlier data affected by COVID-19   │
+  │  Team: Hertha BSC only          │  Union Berlin unrelated to RE5 route │
+  │  Target: occupancy (raw count)  │  occ_pct has outliers (capacity=1)   │
+  └─────────────────────────────────────────────────────────────────────────┘
+
+  Data Summary:
+    - Period: 2022-08-01 ~ 2024-06-30
+    - Total records: 162,520
+    - Holiday records: 5,114
+    - Match day records: 7,007
+
+
+2. Feature Sets
+--------------------------------------------------------------------------------
+
+  Base Features (Historical patterns only):
+    - hour: Hour of day (0-23)
+    - dow: Day of week (0=Mon, 6=Sun)
+    - month: Month (1-12)
+    - is_weekend: Weekend flag (Sat/Sun)
+    - is_rush_hour: Rush hour flag (6-9, 16-19)
+    - is_night: Night flag (22-6)
+    - hist_avg_stop_hour_dow: Historical avg by stop/hour/day-of-week
+    - hist_avg_stop_hour: Historical avg by stop/hour
+    - hist_avg_stop_dow: Historical avg by stop/day-of-week
+    - hist_std_stop_hour_dow: Historical std by stop/hour/day-of-week
+
+  Extended Features (Base + External factors):
+    - is_match_day: Hertha BSC home match day flag
+    - is_holiday: German public holiday flag (Brandenburg)
+
+
+3. Model Performance Results
+--------------------------------------------------------------------------------
+
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │  Horizon    │ Feature Set │   MAE   │  RMSE   │   R²   │  Samples     │
+  ├─────────────────────────────────────────────────────────────────────────┤
+  │  30 min     │  base       │  46.15  │  72.34  │ 0.544  │  32,494      │
+  │  30 min     │  extended   │  45.78  │  71.73  │ 0.552  │  32,494      │
+  │   1 hour    │  base       │  48.46  │  75.53  │ 0.495  │  32,483      │
+  │   1 hour    │  extended   │  48.14  │  74.91  │ 0.503  │  32,483      │
+  │   3 hours   │  base       │  52.35  │  80.63  │ 0.430  │  32,442      │
+  │   3 hours   │  extended   │  52.00  │  80.07  │ 0.438  │  32,442      │
+  │  Next day   │  base       │  55.80  │  85.68  │ 0.363  │  32,040      │
+  │  Next day   │  extended   │  55.42  │  85.15  │ 0.371  │  32,040      │
+  └─────────────────────────────────────────────────────────────────────────┘
+
+  MAE: Mean Absolute Error (passengers)
+  RMSE: Root Mean Squared Error (passengers)
+  R²: Coefficient of Determination
+
+
+4. Improvement from External Factors
+--------------------------------------------------------------------------------
+
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │  Horizon    │ Base MAE │ Ext MAE │ MAE Impr. │ Base R² │ Ext R² │ R² Impr │
+  ├─────────────────────────────────────────────────────────────────────────┤
+  │  30 min     │  46.15   │  45.78  │  +0.80%   │  0.544  │ 0.552  │ +0.008  │
+  │   1 hour    │  48.46   │  48.14  │  +0.66%   │  0.495  │ 0.503  │ +0.008  │
+  │   3 hours   │  52.35   │  52.00  │  +0.67%   │  0.430  │ 0.438  │ +0.008  │
+  │  Next day   │  55.80   │  55.42  │  +0.68%   │  0.363  │ 0.371  │ +0.008  │
+  └─────────────────────────────────────────────────────────────────────────┘
+
+
+5. Feature Importance (1-hour Extended Model)
+--------------------------------------------------------------------------------
+
+  Top 10 Most Important Features:
+    1. hist_avg_stop_dow         (highest impact)
+    2. month
+    3. hour
+    4. hist_std_stop_hour_dow
+    5. hist_avg_stop_hour
+    6. hist_avg_stop_hour_dow
+    7. dow
+    8. is_night
+    9. is_holiday
+   10. is_rush_hour
+
+
+6. Key Findings
+--------------------------------------------------------------------------------
+
+  1) Prediction Accuracy Decreases with Longer Horizons
+     - 30 min: MAE = 45.78 passengers, R² = 0.552
+     - Next day: MAE = 55.42 passengers, R² = 0.371
+     - Accuracy drops ~21% from 30min to next-day prediction
+
+  2) External Factors Provide Consistent but Modest Improvement
+     - MAE improvement: 0.66% ~ 0.80% across all horizons
+     - R² improvement: +0.008 consistently across all horizons
+     - Improvement is stable regardless of prediction horizon
+
+  3) Historical Patterns Dominate Prediction
+     - hist_avg_stop_dow is the most important feature
+     - Time-based features (month, hour) are highly influential
+     - External factors (match_day, holiday) have lower importance
+
+  4) Implications for Operations vs Trip Planning
+     - Short-term (30min-1h): Suitable for real-time passenger guidance
+     - Long-term (3h-next day): Useful for operational planning
+     - External factors add value in both scenarios
+
+
+7. Limitations
+--------------------------------------------------------------------------------
+
+  - External factors limited to match days and holidays
+  - Weather data not included in this analysis
+  - Concert/event data not available
+  - RE5 is not directly connected to Olympiastadion (S3/S9 are main routes)
+  - Prediction based on historical averages, not real-time data
+
+
+8. Conclusion
+--------------------------------------------------------------------------------
+
+  External factors (match days, holidays) do improve prediction accuracy,
+  but the improvement is modest (~0.7% MAE reduction). Historical patterns
+  remain the dominant predictor of seat availability.
+
+  For practical applications:
+    - Use extended model for slightly better accuracy
+    - Focus on historical pattern features for baseline predictions
+    - Consider external factors as supplementary information
+
+================================================================================
+Generated: 2024
+Analysis Tool: RandomForestRegressor (sklearn)
+================================================================================

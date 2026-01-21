@@ -1,0 +1,5 @@
+scenario,samples,top_feature,top_shap
+match_day,88,hist_avg_stop_dow,40.51042865678185
+holiday,64,hist_avg_stop_dow,45.70974372354787
+rush_hour,892,hist_avg_stop_dow,44.63656380955351
+weekend,516,hist_avg_stop_dow,47.50314340061436

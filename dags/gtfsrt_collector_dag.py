@@ -15,8 +15,7 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from src.gtfsrt_collector import collect_gtfsrt_data
-from src.weather_collector import collect_weather_data
+from src.collectors import collect_gtfsrt_data, collect_weather_data
 
 
 # =============================================================================

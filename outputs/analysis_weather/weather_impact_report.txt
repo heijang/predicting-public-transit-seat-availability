@@ -1,0 +1,62 @@
+================================================================================
+WEATHER IMPACT ON RE5 OCCUPANCY - ANALYSIS REPORT
+================================================================================
+
+Analysis Period: 2022-08 ~ 2024-06
+Comparison Method: Same day-of-week comparison
+
+--------------------------------------------------------------------------------
+1. RAIN IMPACT (>1mm precipitation)
+--------------------------------------------------------------------------------
+  Rainy days mean occupancy:  95.8
+  Normal days mean occupancy: 93.7
+  Difference: +2.1 (+2.3%)
+  p-value: 0.0000
+  Cohen's d: 0.020 (negligible)
+  95% CI: [1.0, 3.3]
+  Significant: YES
+
+--------------------------------------------------------------------------------
+2. HEAVY RAIN IMPACT (>5mm precipitation)
+--------------------------------------------------------------------------------
+  Heavy rain days mean occupancy: 106.8
+  Normal days mean occupancy:     92.2
+  Difference: +14.6 (+15.8%)
+  p-value: 0.0000
+  Cohen's d: 0.136 (negligible)
+  Significant: YES
+
+--------------------------------------------------------------------------------
+3. COLD DROP IMPACT (>5°C temperature drop from previous day)
+--------------------------------------------------------------------------------
+  Cold drop days mean occupancy: 88.8
+  Normal days mean occupancy:    94.6
+  Difference: -5.8 (-6.1%)
+  p-value: 0.1257
+  Cohen's d: -0.054 (negligible)
+  Significant: NO
+
+--------------------------------------------------------------------------------
+4. SNOW IMPACT
+--------------------------------------------------------------------------------
+  Snowy days mean occupancy:  63.4
+  Normal days mean occupancy: 99.1
+  Difference: -35.7 (-36.0%)
+  p-value: 0.0000
+  Cohen's d: -0.334 (small)
+  Significant: YES
+
+--------------------------------------------------------------------------------
+5. TEMPERATURE CORRELATION
+--------------------------------------------------------------------------------
+  Correlation (occupancy vs temp): 0.589
+
+================================================================================
+SUMMARY
+================================================================================
+Significant weather effects found:
+  - rain: +2.3% (p=0.0000)
+  - heavy_rain: +15.8% (p=0.0000)
+  - snow: -36.0% (p=0.0000)
+
+================================================================================

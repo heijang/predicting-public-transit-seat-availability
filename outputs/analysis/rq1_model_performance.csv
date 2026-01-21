@@ -1,0 +1,9 @@
+horizon,feature_set,MAE,RMSE,R2,samples
+30min,base,46.15,72.34,0.544,32494
+30min,extended,45.78,71.73,0.552,32494
+1h,base,48.46,75.53,0.495,32483
+1h,extended,48.14,74.91,0.503,32483
+3h,base,52.35,80.63,0.43,32442
+3h,extended,52.0,80.07,0.438,32442
+next_day,base,55.8,85.68,0.363,32040
+next_day,extended,55.42,85.15,0.371,32040

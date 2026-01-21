@@ -1,0 +1,5 @@
+horizon,base_MAE,extended_MAE,MAE_improvement_%,base_R2,extended_R2,R2_improvement
+30min,46.15,45.78,0.8,0.544,0.552,0.008
+1h,48.46,48.14,0.66,0.495,0.503,0.008
+3h,52.35,52.0,0.67,0.43,0.438,0.008
+next_day,55.8,55.42,0.68,0.363,0.371,0.008

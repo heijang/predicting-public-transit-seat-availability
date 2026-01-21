@@ -1,0 +1,8 @@
+scenario,n_samples,top_1_feature,top_2_feature,top_3_feature
+match_day,22,is_match_day,hist_avg_stop_hour_dow,month
+non_match_day,1978,hist_avg_stop_hour_dow,month,hist_avg_stop_dow
+holiday,68,hist_avg_stop_hour_dow,hist_avg_stop_dow,month
+non_holiday,1932,hist_avg_stop_hour_dow,month,hist_avg_stop_dow
+non_rush_hour,2000,hist_avg_stop_hour_dow,month,hist_avg_stop_dow
+weekend,506,hist_avg_stop_hour_dow,hist_avg_stop_dow,month
+weekday,1494,hist_avg_stop_hour_dow,month,hist_avg_stop_dow

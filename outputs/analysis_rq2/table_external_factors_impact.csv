@@ -1,0 +1,9 @@
+scenario,n_samples,is_match_day_shap,is_holiday_shap,is_weekend_shap,is_rush_hour_shap,is_night_shap
+overall,2000,0.2453,0.1801,0.08,0.0,0.0
+match_day,22,6.4528,0.075,0.2454,0.0,0.0
+non_match_day,1978,0.1763,0.1812,0.0782,0.0,0.0
+holiday,68,0.2718,2.394,0.0862,0.0,0.0
+non_holiday,1932,0.2444,0.1021,0.0798,0.0,0.0
+non_rush_hour,2000,0.2453,0.1801,0.08,0.0,0.0
+weekend,506,0.255,0.0969,0.1458,0.0,0.0
+weekday,1494,0.242,0.2082,0.0577,0.0,0.0

@@ -1,0 +1,208 @@
+================================================================================
+RQ2: SHAP-based Explainability - Analysis Report
+================================================================================
+
+Research Question:
+  How do external factors shape SHAP-based explanations of seat availability
+  predictions in special scenarios such as concert nights, storm days, and
+  holiday weekends?
+
+================================================================================
+
+1. Analysis Overview
+--------------------------------------------------------------------------------
+
+  Model Used: 1-hour Extended Model (from RQ1)
+  Method: SHAP (SHapley Additive exPlanations) TreeExplainer
+  Sample Size: 2,000 randomly selected observations
+
+  SHAP values indicate how much each feature contributes to pushing the
+  prediction away from the base value (average prediction).
+
+
+2. Overall Feature Importance (SHAP-based)
+--------------------------------------------------------------------------------
+
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │  Rank │  Feature                  │  Mean |SHAP|  │  Interpretation      │
+  ├─────────────────────────────────────────────────────────────────────────┤
+  │   1   │  hist_avg_stop_dow        │    45.78      │  Highest impact      │
+  │   2   │  month                    │    26.15      │  Seasonal effect     │
+  │   3   │  hour                     │    20.06      │  Time-of-day effect  │
+  │   4   │  hist_std_stop_hour_dow   │     3.13      │  Variability signal  │
+  │   5   │  hist_avg_stop_hour       │     2.80      │  Hourly pattern      │
+  │   6   │  hist_avg_stop_hour_dow   │     2.34      │  Specific pattern    │
+  │   7   │  dow                      │     1.47      │  Day-of-week effect  │
+  │   8   │  is_night                 │     0.86      │  Night-time effect   │
+  │   9   │  is_holiday               │     0.83      │  Holiday effect      │
+  │  10   │  is_rush_hour             │     0.67      │  Rush hour effect    │
+  │  11   │  is_weekend               │     0.33      │  Weekend effect      │
+  │  12   │  is_match_day             │     0.26      │  Match day effect    │
+  └─────────────────────────────────────────────────────────────────────────┘
+
+  Note: Mean |SHAP| = average absolute SHAP value (passengers)
+
+
+3. Special Scenario Analysis
+--------------------------------------------------------------------------------
+
+  3.1 Match Day Scenario (88 samples)
+  ────────────────────────────────────
+
+  On match days, the model's explanation changes:
+
+  ┌───────────────────────────────────────────────────────────────────────┐
+  │  Feature           │ Match Day │ Non-Match │ Difference │ Insight    │
+  ├───────────────────────────────────────────────────────────────────────┤
+  │  is_match_day      │    2.46   │    0.16   │   +2.30    │ Activated  │
+  │  hour              │   22.55   │   19.95   │   +2.60    │ More imp.  │
+  │  hist_avg_stop_dow │   40.51   │   46.02   │   -5.51    │ Less imp.  │
+  │  is_weekend        │    0.56   │    0.32   │   +0.24    │ More imp.  │
+  └───────────────────────────────────────────────────────────────────────┘
+
+  Key Insight: On match days, the is_match_day feature becomes active
+  (SHAP increases from 0.16 to 2.46), and hour becomes more important,
+  suggesting time-specific match effects.
+
+
+  3.2 Holiday Scenario (64 samples)
+  ──────────────────────────────────
+
+  On holidays, explanations show distinct patterns:
+
+  ┌───────────────────────────────────────────────────────────────────────┐
+  │  Feature           │ Holiday   │ Non-Hol.  │ Difference │ Insight    │
+  ├───────────────────────────────────────────────────────────────────────┤
+  │  is_holiday        │   11.96   │    0.46   │  +11.50    │ Activated  │
+  │  hour              │   23.59   │   19.95   │   +3.64    │ More imp.  │
+  │  month             │   19.63   │   26.37   │   -6.73    │ Less imp.  │
+  │  dow               │    2.21   │    1.45   │   +0.76    │ More imp.  │
+  └───────────────────────────────────────────────────────────────────────┘
+
+  Key Insight: is_holiday becomes the dominant external factor on holidays
+  (SHAP = 11.96), significantly higher than match days. Month becomes
+  less important as holiday effect overrides seasonal patterns.
+
+
+  3.3 Rush Hour Scenario (892 samples)
+  ─────────────────────────────────────
+
+  During rush hours, time features dominate:
+
+  ┌───────────────────────────────────────────────────────────────────────┐
+  │  Feature           │ Rush Hour │ Non-Rush  │ Difference │ Insight    │
+  ├───────────────────────────────────────────────────────────────────────┤
+  │  hour              │   25.02   │   16.07   │   +8.96    │ Much more  │
+  │  is_rush_hour      │    0.81   │    0.56   │   +0.25    │ Activated  │
+  │  is_night          │    0.45   │    1.20   │   -0.75    │ Less imp.  │
+  │  hist_avg_stop_dow │   44.64   │   46.70   │   -2.06    │ Less imp.  │
+  └───────────────────────────────────────────────────────────────────────┘
+
+  Key Insight: Hour feature importance increases dramatically during
+  rush hours (+8.96), showing that time-of-day is crucial for explaining
+  predictions during peak periods.
+
+
+  3.4 Weekend Scenario (516 samples)
+  ──────────────────────────────────
+
+  Weekends show different feature dynamics:
+
+  ┌───────────────────────────────────────────────────────────────────────┐
+  │  Feature           │ Weekend   │ Weekday   │ Difference │ Insight    │
+  ├───────────────────────────────────────────────────────────────────────┤
+  │  hour              │   24.03   │   18.68   │   +5.34    │ More imp.  │
+  │  hist_avg_stop_dow │   47.50   │   45.18   │   +2.32    │ More imp.  │
+  │  month             │   27.71   │   25.61   │   +2.10    │ More imp.  │
+  │  is_match_day      │    0.58   │    0.15   │   +0.43    │ More imp.  │
+  └───────────────────────────────────────────────────────────────────────┘
+
+  Key Insight: On weekends, most features become more important,
+  especially hour (+5.34) and is_match_day (+0.43), as weekend
+  travel patterns are more variable.
+
+
+4. Summary of External Factor Effects
+--------------------------------------------------------------------------------
+
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │  Scenario     │ Samples │ Top Feature       │ External Factor Impact   │
+  ├─────────────────────────────────────────────────────────────────────────┤
+  │  Match Day    │   88    │ hist_avg_stop_dow │ is_match_day: +2.30      │
+  │  Holiday      │   64    │ hist_avg_stop_dow │ is_holiday: +11.50       │
+  │  Rush Hour    │  892    │ hist_avg_stop_dow │ hour: +8.96              │
+  │  Weekend      │  516    │ hist_avg_stop_dow │ is_match_day: +0.43      │
+  └─────────────────────────────────────────────────────────────────────────┘
+
+
+5. Key Findings
+--------------------------------------------------------------------------------
+
+  1) Historical Patterns Remain Dominant
+     - hist_avg_stop_dow is the top feature in ALL scenarios
+     - Historical averages provide the foundation for predictions
+     - External factors modify but don't replace historical patterns
+
+  2) Holiday Effect is Strongest
+     - is_holiday SHAP increases by +11.50 on holidays
+     - This is 5x stronger than is_match_day effect (+2.30)
+     - Holidays significantly alter prediction explanations
+
+  3) Match Day Effect is Moderate
+     - is_match_day SHAP increases by +2.30 on match days
+     - Hour importance also increases (+2.60)
+     - Effect is noticeable but not dominant
+
+  4) Time Features Adapt to Context
+     - Hour importance varies significantly by scenario
+     - Rush hour: +8.96 increase
+     - Weekend: +5.34 increase
+     - Shows model captures time-context interactions
+
+  5) Scenario-Specific Explanations Differ
+     - Different scenarios activate different feature patterns
+     - This enables context-aware explanations for passengers
+     - E.g., "High predicted occupancy due to holiday" vs "due to rush hour"
+
+
+6. Implications for Decision Support
+--------------------------------------------------------------------------------
+
+  For Passengers:
+    - On match days: "Expect higher occupancy, especially around game time"
+    - On holidays: "Occupancy patterns differ significantly from normal days"
+    - During rush hour: "Time of day is the main factor affecting crowding"
+
+  For Operations:
+    - Holiday planning requires dedicated models/adjustments
+    - Match day effects are predictable and can be incorporated
+    - Rush hour patterns are well-captured by time features
+
+
+7. Limitations
+--------------------------------------------------------------------------------
+
+  - Concert/event data not available (only match days analyzed)
+  - Storm/weather data not included in analysis
+  - Sample sizes for some scenarios are small (holiday: 64 samples)
+  - SHAP computed on 2,000 sample subset for efficiency
+
+
+8. Conclusion
+--------------------------------------------------------------------------------
+
+  SHAP analysis reveals that external factors shape predictions differently
+  across scenarios:
+
+  - Holidays have the strongest external factor effect (+11.50 SHAP)
+  - Match days have moderate but consistent effect (+2.30 SHAP)
+  - Historical patterns (hist_avg_stop_dow) remain the foundation
+
+  This enables context-aware explanations that can support both passenger
+  decision-making and operational planning by highlighting WHY a particular
+  occupancy level is predicted.
+
+================================================================================
+Generated: 2024
+Analysis Tool: SHAP TreeExplainer
+================================================================================

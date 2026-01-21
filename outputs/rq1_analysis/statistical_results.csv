@@ -1,0 +1,2 @@
+n_match,n_control,mean_match,mean_control,median_match,median_control,std_match,std_control,mannwhitney_u,mannwhitney_p,welch_t,welch_p,cohens_d,effect_interpretation,bootstrap_ci_lower,bootstrap_ci_upper,significant_mw,significant_welch
+5573,54025,13.338935941144806,15.443626099028226,7.4,8.12,17.180183642111995,20.499185667897333,143373130.0,0.9999999977174092,-8.539828555084569,1.0,-0.10413082045518982,negligible,-2.567103117591233,-1.5958436081389276,False,False

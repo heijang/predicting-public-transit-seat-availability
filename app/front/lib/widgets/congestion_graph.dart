@@ -3,14 +3,22 @@ import '../data/station_data.dart';
 import '../models/congestion.dart';
 
 class CongestionGraph extends StatelessWidget {
-  const CongestionGraph({super.key});
+  final List<double> occupancyData;
+  final String? recommendation;
+
+  const CongestionGraph({
+    super.key,
+    required this.occupancyData,
+    this.recommendation,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final data = StationData.getDailyCongestionData();
-    final labels = StationData.getHourLabels();
+    // Convert 0.0-1.0 to 0-100 percentage
+    final data = occupancyData.map((e) => (e * 100).toInt()).toList();
+    final labels = _generateHourLabels();
     final currentHour = DateTime.now().hour;
-    final currentIndex = currentHour >= 5 && currentHour <= 23 ? currentHour - 5 : -1;
+    final currentIndex = currentHour < data.length ? currentHour : -1;
 
     return Container(
       padding: const EdgeInsets.all(8),
@@ -54,10 +62,14 @@ class CongestionGraph extends StatelessWidget {
           const SizedBox(height: 2),
           _buildHourLabels(labels),
           const SizedBox(height: 8),
-          _buildRecommendations(data, currentIndex),
+          _buildRecommendationBox(),
         ],
       ),
     );
+  }
+
+  List<String> _generateHourLabels() {
+    return List.generate(24, (i) => i.toString());
   }
 
   Widget _buildLegend() {
@@ -92,15 +104,15 @@ class CongestionGraph extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(labels.first, style: const TextStyle(fontSize: 8, color: Colors.grey)),
+        const Text('0', style: TextStyle(fontSize: 8, color: Colors.grey)),
         const Text('12', style: TextStyle(fontSize: 8, color: Colors.grey)),
-        Text(labels.last, style: const TextStyle(fontSize: 8, color: Colors.grey)),
+        const Text('23', style: TextStyle(fontSize: 8, color: Colors.grey)),
       ],
     );
   }
 
-  Widget _buildRecommendations(List<int> data, int currentIndex) {
-    final recommendations = _getRecommendations(data, currentIndex);
+  Widget _buildRecommendationBox() {
+    final displayText = recommendation ?? 'Select a route to see recommendations.';
 
     return Container(
       padding: const EdgeInsets.all(8),
@@ -109,122 +121,21 @@ class CongestionGraph extends StatelessWidget {
         borderRadius: BorderRadius.circular(6),
         border: Border.all(color: Colors.grey[200]!),
       ),
-      child: Column(
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(Icons.lightbulb_outline, size: 12, color: Colors.amber[700]),
-              const SizedBox(width: 4),
-              Text(
-                'Recommendation',
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey[700],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          ...recommendations.map((rec) => Padding(
-            padding: const EdgeInsets.only(bottom: 2),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('• ', style: TextStyle(fontSize: 10, color: rec.color, fontWeight: FontWeight.bold)),
-                Expanded(
-                  child: Text(
-                    rec.text,
-                    style: TextStyle(fontSize: 10, color: Colors.grey[800]),
-                  ),
-                ),
-              ],
+          Icon(Icons.lightbulb_outline, size: 14, color: Colors.amber[700]),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Text(
+              displayText,
+              style: TextStyle(fontSize: 11, color: Colors.grey[800]),
             ),
-          )),
+          ),
         ],
       ),
     );
   }
-
-  List<_Recommendation> _getRecommendations(List<int> data, int currentIndex) {
-    final recommendations = <_Recommendation>[];
-
-    if (currentIndex < 0 || currentIndex >= data.length) {
-      recommendations.add(_Recommendation(
-        'Service hours: 5:00 - 23:00. Check back during operating hours.',
-        Colors.grey,
-      ));
-      return recommendations;
-    }
-
-    final currentCongestion = data[currentIndex];
-    final currentLevel = CongestionLevelExtension.fromPercentage(currentCongestion);
-
-    // Check next hour
-    final nextHourComfortable = currentIndex + 1 < data.length && data[currentIndex + 1] <= 50;
-    final currentComfortable = currentCongestion <= 50;
-
-    // Current status recommendation
-    if (currentLevel == CongestionLevel.comfortable) {
-      recommendations.add(_Recommendation(
-        'Currently low congestion. Good time to board!',
-        Colors.green,
-      ));
-    } else if (currentLevel == CongestionLevel.normal) {
-      recommendations.add(_Recommendation(
-        'Moderate congestion now. Acceptable for boarding.',
-        Colors.orange,
-      ));
-    } else {
-      recommendations.add(_Recommendation(
-        'High congestion right now. Consider waiting if possible.',
-        Colors.red,
-      ));
-    }
-
-    // Find best time recommendation
-    if (!currentComfortable) {
-      final bestTime = _findNextComfortableTime(data, currentIndex);
-      if (bestTime != null) {
-        recommendations.add(_Recommendation(
-          'Lower congestion expected around ${bestTime + 5}:00.',
-          Colors.blue,
-        ));
-      }
-    } else if (nextHourComfortable) {
-      recommendations.add(_Recommendation(
-        'Congestion stays low for the next hour.',
-        Colors.green,
-      ));
-    } else if (currentIndex + 1 < data.length) {
-      final nextLevel = CongestionLevelExtension.fromPercentage(data[currentIndex + 1]);
-      if (nextLevel == CongestionLevel.crowded) {
-        recommendations.add(_Recommendation(
-          'Congestion increases soon. Board now if possible.',
-          Colors.orange,
-        ));
-      }
-    }
-
-    return recommendations;
-  }
-
-  int? _findNextComfortableTime(List<int> data, int currentIndex) {
-    for (int i = currentIndex + 1; i < data.length; i++) {
-      if (data[i] <= 50) {
-        return i;
-      }
-    }
-    return null;
-  }
-}
-
-class _Recommendation {
-  final String text;
-  final Color color;
-
-  _Recommendation(this.text, this.color);
 }
 
 class _GraphPainter extends CustomPainter {
